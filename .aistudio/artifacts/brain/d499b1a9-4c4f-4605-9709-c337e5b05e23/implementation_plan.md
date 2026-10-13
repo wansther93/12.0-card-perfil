@@ -1,120 +1,102 @@
-# Gerador de Card Oficial do Perfil (9:16 Social Stories)
+# Modernização Premium da Aba de Progresso (Ficha Técnica / AnimeDetailModal)
 
-Substituição completa do gerador de cards antigo por um gerador unificado que replica fielmente a estética premium do Perfil (preto profundo, banner, avatar luminoso, insígnias personalizadas e pódio Top 5 com capas oficiais), compactado proporcionalmente para caber 100% em uma única imagem vertical 9:16 em alta definição para WhatsApp Status e Instagram Stories.
+Reformulação completa da experiência da aba **Progresso** dentro do modal de detalhes do anime (`AnimeDetailModal.tsx`). O objetivo é eliminar ambiguidades (como o confuso botão "Assistir" em um app sem player de vídeo), tornar a navegação e marcação de temporadas 100% intuitiva, e entregar uma estética moderna, imersiva e de alto padrão no fundo preto profundo (`#000000`).
 
 ## User Review & Critical Decisions
 
 > [!IMPORTANT]
-> As seguintes decisões foram confirmadas com base nas suas respostas de alinhamento:
-
-- **Formato da Imagem**: Formato vertical 9:16 (1080x1920px em alta resolução), ideal para visualização em tela cheia de smartphones, WhatsApp Status e Instagram Stories.
-- **Estatísticas Expandidas**: Bloco de métricas rico incluindo Tempo Assistido (dias/horas), Total de Episódios, Nota Média, Animes Concluídos, Animes em Andamento ("Assistindo") e Total da Coleção.
-- **Ponto de Acesso**: Disparado exclusivamente a partir da engrenagem de configurações (`SettingsModal`), mantendo a tela inicial e o perfil limpos.
-- **Identidade Visual Fiel**: Uso idêntico da paleta preta profunda (`#000000`, fundos translúcidos de vidro fosco `backdrop-blur`), banner oficial do usuário, avatar com anel dourado reluzente, selos de cargo (`DEV / ADMIN`), título otaku, pódio com coroa dourada e as ilustrações ricas das insígnias (`/badges/badge_*.webp`).
+> **Decisões críticas de usabilidade e interface:**
+>
+> 1. **Remoção definitiva do botão "Assistir":**
+>    - O projeto WAnime List é um catálogo/tracker de dados oficiais e não possui streaming ou player de vídeo. O termo "Assistir" induzia os usuários ao erro.
+>    - **Novo padrão:** Temporadas inativas terão a ação clara **"Definir como Atual"** (ou toque no próprio card). A temporada em andamento terá o selo dourado em destaque **"Temporada Atual"**.
+> 2. **Marcação de Conclusão Clara e Sem Adivinhação:**
+>    - O círculo isolado que exigia que o usuário "adivinhasse" onde clicar é substituído por um controle de status explícito:
+>      - Se concluída: Selo verde esmeralda com ícone de verificação **"✓ Concluída"** (clicável para alternar/desmarcar).
+>      - Se pendente: Botão com texto e ícone nítidos **"Marcar Concluída"**, que com 1 clique preenche o arco e atualiza o progresso.
+> 3. **Cards Flutuantes no Preto Profundo:**
+>    - Manutenção estrita da identidade visual do app: fundo preto absoluto (`#000000`), sem painéis cinzas ou caixas estilo dashboard retrô.
+>    - Cada temporada se torna um card translúcido com borda sutil (`bg-zinc-950/70 border border-white/10 rounded-2xl`), conectado por uma linha vertical luminosa que guia os olhos pela jornada da obra.
 
 ---
 
 ## 1. Overview & Core Concept
 
-- **O que faz**: Permite ao usuário gerar e baixar em 1 clique uma imagem profissional (estilo "print perfeito") do seu perfil completo do WAnime List, condensando em uma única tela vertical de proporção 9:16 todos os elementos que hoje exigiriam duas capturas de tela com rolagem.
-- **Público-alvo**: Usuários que desejam compartilhar suas conquistas, gosto pessoal e progresso de animes com amigos em redes sociais e mensageiros.
-- **Valor Principal**: Elimina os cartões genéricos e antiquados estilo dashboard dos anos 90, entregando uma arte moderna, com iluminação ambiente e sem cortes verticais.
+- **O que faz**: Permite ao usuário visualizar a linha do tempo de temporadas/arcos de um anime, saber exatamente em qual temporada ele está, registrar episódios de forma rápida e intuitiva, e avançar para novas temporadas sem dúvidas.
+- **Público-alvo**: Usuários que acompanham animes com múltiplas temporadas (ex: *Re:Zero*, *Demon Slayer*, *Attack on Titan*, *One Piece*) e precisam de uma interface limpa para saber onde pararam.
+- **Valor Principal**: Elimina qualquer confusão sobre pirataria/player de vídeo, oferecendo uma experiência focada em rastreamento de lista com clareza visual imediata.
 
 ---
 
 ## 2. User Experience & Visual Design
 
-### Fluxo do Usuário
-1. O usuário clica na **Engrenagem de Configurações** (no topo do app).
-2. Na seção de Compartilhamento, clica no botão com ícone de câmera/cartão: **"Gerar Card do Perfil (Stories)"**.
-3. Abre-se um modal moderno e escuro com a pré-visualização ao vivo do card renderizado em tempo real com todos os seus dados.
-4. O usuário visualiza o card exatamente como ele será exportado (com banner, avatar, bio, estatísticas, top 5 com capas e as 5 insígnias).
-5. Dois botões de ação na base do modal:
-   - **"Baixar Imagem (PNG HD)"**: Exporta a imagem em alta resolução (1080 × 1920px).
-   - **"Copiar Imagem"**: Copia o arquivo binário PNG diretamente para a área de transferência para colar no WhatsApp Web ou redes sociais.
+### O que o usuário verá na aba Progresso:
 
-### Estrutura Visual do Card Gerado (9:16 Vertical)
-```
-┌────────────────────────────────────────────────────────┐
-│ [ BANNER SUPERIOR HD COM GRADIENTE SUAVE PARA O PRETO ]│
-│                                                        │
-│   (O) [Avatar circular com anel dourado e brilho]      │
-│   @Username   [DEV / ADMIN]                            │
-│   👑 Título Otaku (ex: Imperador dos Animes)           │
-│   "Bio ou frase personalizada do usuário"              │
-│                                                        │
-├────────────────────────────────────────────────────────┤
-│ 📊 ESTATÍSTICAS DA JORNADA                             │
-│ ┌──────────────┬──────────────┬──────────────┐         │
-│ │ ⏱️ Tempo     │ 🎬 Episódios │ ⭐ Nota Média│         │
-│ │   50d 3h     │    3.072     │     7.5      │         │
-│ ├──────────────┼──────────────┼──────────────┤         │
-│ │ 🏆 Concluídos│ 📺 Assistindo│ 📚 Coleção   │         │
-│ │     28       │      5       │      35      │         │
-│ └──────────────┴──────────────┴──────────────┘         │
-│                                                        │
-├────────────────────────────────────────────────────────┤
-│ 🏆 TOP 5 FAVORITOS (PÓDIO OLÍMPICO COM CAPAS HD)       │
-│                     👑 (Coroa)                         │
-│   ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐     │
-│   │ 4º   │  │ 2º   │  │ 1º   │  │ 3º   │  │ 5º   │     │
-│   │ Capa │  │ Capa │  │ Capa │  │ Capa │  │ Capa │     │
-│   │ ⭐8.0│  │ ⭐9.2│  │ ⭐9.8│  │ ⭐8.5│  │ ⭐7.9│     │
-│   └──────┘  └──────┘  └──────┘  └──────┘  └──────┘     │
-│                                                        │
-├────────────────────────────────────────────────────────┤
-│ 🎖️ 5 INSÍGNIAS EM DESTAQUE (ARTES PERSONALIZADAS)      │
-│   ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐     │
-│   │(Wano)│  │(Mult)│  │(Grand│  │(Drag)│  │(Deus)│     │
-│   │ Arte │  │ Arte │  │ Arte │  │ Arte │  │ Arte │     │
-│   └──────┘  └──────┘  └──────┘  └──────┘  └──────┘     │
-│   Títulos legíveis abaixo de cada insígnia             │
-│                                                        │
-├────────────────────────────────────────────────────────┤
-│ ⚡ WAnime List · Seu Guia Definitivo de Animes         │
-└────────────────────────────────────────────────────────┘
-```
+1. **Barra de Avaliação Pessoal (Topo):**
+   - Slider suave de nota com estrelas douradas (`★ 8.5 / 10`), com visual limpo flutuando sobre o preto e opção rápida de limpar nota.
+2. **Resumo da Linha do Tempo e Filtros:**
+   - Cabeçalho: Ícone de camadas + **"Linha do Tempo"** + contador de progresso da obra (ex.: `3/4 temporadas concluídas`).
+   - Abas elegantes de filtro quando houver filmes/OVAs: `Séries (3)` / `Extras (1)` e botão `Gerenciar` para customizações avançadas.
+3. **Cards de Temporadas Conectados (Jornada Visual):**
+   - **Para Temporadas Já Concluídas:**
+     - Card sutil com número da temporada, total de episódios e data/formato (TV/Filme).
+     - Selo verde esmeralda: **"✓ Concluída"**.
+     - Ação rápida: Botão ou clique para **"Definir como Atual"** caso o usuário decida rever ou tenha marcado por engano.
+   - **Para a Temporada Atual (Destaque Principal):**
+     - Borda dourada/âmbar com leve brilho ambiente (`border-amber-400/60 shadow-lg shadow-amber-500/10`).
+     - Tag luminosa: **"★ Temporada Atual"**.
+     - **Painel Central de Episódios:**
+       - Botão `-1 Ep` (com proteção contra valores negativos).
+       - Contador grande e nítido em numerais tabulares: **Episódio 11 / 19**.
+       - Botão `+1 Ep` em destaque dourado/âmbar de fácil toque.
+       - Botão sutil `Digitar` para pular direto para um episódio específico.
+       - Barra de progresso em gradiente esmeralda/âmbar (`58% concluído · 8 eps restantes`).
+     - **Ação Rápida de Conclusão:** Botão verde **"Marcar Temporada Concluída"**.
+   - **Para Próximas Temporadas (Ainda Não Iniciadas):**
+     - Card com texto esmaecido elegante e status **"Pendente"**.
+     - Botão nítido: **"Iniciar Temporada"** ou **"Definir como Atual"**, tornando natural o avanço na obra.
+4. **Alerta Inteligente de Avanço de Temporada:**
+   - Quando o usuário atinge o último episódio da temporada atual e existe uma próxima cadastrada, surge um card comemorativo no topo da aba:
+     - `🎉 Temporada concluída! Deseja avançar para a Temporada 5?` com botão dourado **"Avançar para Próxima"**.
 
 ---
 
 ## 3. Key Product Decisions & Trade-Offs
 
-- **Substituição Completa vs. Manutenção do Gerador Antigo**:
-  - *Decisão*: Substituição integral do `SocialCardGeneratorModal` antigo pelo novo `ProfileCardGeneratorModal`.
-  - *Por que*: O gerador antigo possuía mais de 1.100 linhas com múltiplos layouts fragmentados que o usuário descreveu como "feios e com cara de dashboard antigo de 1990". Unificar tudo em torno do conceito da "Print Perfeita do Perfil" atende 100% ao desejo estético e funcional expresso.
-- **Renderização de Alta Fidelidade (HTML-to-Canvas / DOM Canvas Offscreen)**:
-  - *Decisão*: Construir o card em DOM estruturado com Tailwind rigoroso e renderizar para canvas através de desenho nativo em alta densidade (escala 2x para nitidez cristalina de 1080x1920) com suporte a imagens CORS (capas de animes e ilustrações de insígnias locais `/badges/*`).
-- **Respeito ao Princípio de Não Modificar Outras Abas**:
-  - *Decisão*: Nenhuma outra aba (Lista, Agenda, Notícias, Perfil nativo, filtros, status, lógicas de sincronização de episódios) será alterada. A mudança é cirúrgica no modal de geração de card disparado pela engrenagem.
+- **Substituição Cirúrgica:**
+  - Apenas o bloco renderizado por `{activeTab === 'progress'}` dentro de `src/components/AnimeDetailModal.tsx` será aprimorado.
+  - **Zero alterações** nas outras abas da Ficha Técnica (`Infos`, `Elenco`, `Músicas`, `Onde Ver`), no banner superior, na tela de lista ou nas funções de banco de dados do Firestore.
+- **Preservação de Todas as Lógicas de Negócio:**
+  - `onSwitchSeason`, `onToggleSeasonWatched`, `onIncrement`, `onDecrement`, `onUpdateEpisode`, `onUpdateRating` permanecem chamados exatamente com as mesmas assinaturas e regras de validação (limites de episódios, datas e sincronização com o banco).
 
 ---
 
-## 4. Technical Architecture & Data Strategy
+## 4. Technical Architecture & Component Mapping
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                    SettingsModal.tsx                         │
-│           (Botão "Gerar Card do Perfil (Stories)")           │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ Abre modal
-                               ▼
-┌──────────────────────────────────────────────────────────────┐
-│             ProfileCardGeneratorModal.tsx                     │
-│  - Recebe: userProfile, animes, userName, avatarUrl          │
-│  - Calcula estatísticas completas:                           │
-│    • Tempo total em dias e horas (24 min/ep)                 │
-│    • Total de episódios somando todas as temporadas          │
-│    • Nota média pessoal dos animes avaliados                 │
-│    • Contagem: Concluídos, Assistindo, Total na lista        │
-│  - Coleta Top 5 (userProfile.top5AnimeIds -> animes)         │
-│  - Coleta 5 Insígnias (userProfile.featuredBadgeIds          │
-│    -> BADGE_IMAGE_MAP com fallback dinâmico)                 │
-│  - Canvas de Exportação 1080x1920 (PNG)                      │
-│  - Botões de Baixar e Copiar para Clipboard                  │
-└──────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    AnimeDetailModal.tsx                         │
+│                                                                 │
+│  [ Banner + Capa + Título + Status Pills ]                      │
+│  [ Abas: Progresso (Ativa) | Infos | Elenco | Músicas | Onde Ver]│
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │               CONTEÚDO DA ABA DE PROGRESSO                │  │
+│  │                                                           │  │
+│  │  1. Avaliação Pessoal (Slider ★ 1-10)                     │  │
+│  │  2. Linha do Tempo (Resumo + Filtro Séries/Extras)        │  │
+│  │                                                           │  │
+│  │  [Card: Temporada 1]  -> Status: [✓ Concluída]            │  │
+│  │                          Ação:   [Definir como Atual]     │  │
+│  │                                                           │  │
+│  │  [Card: Temporada 2 (ATUAL) - Destaque Âmbar]             │  │
+│  │    • Status: [★ Temporada Atual]                          │  │
+│  │    • Controles: [-1]  Ep 11 / 19  [+1]  [Digitar]         │  │
+│  │    • Barra: [=========>      ] 58% (8 restantes)          │  │
+│  │    • Botão: [Marcar Temporada Concluída]                  │  │
+│  │                                                           │  │
+│  │  [Card: Temporada 3]  -> Status: [Pendente]               │  │
+│  │                          Ação:   [Iniciar Temporada]      │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
 ```
-
-### Dados Manipulados
-- `userProfile`: Banner (`customBannerUrl`), Avatar (`customAvatarUrl`), Apelido (`publicUsername`), Título Otaku (`otakuTitle`), Bio (`bio`), Top 5 IDs (`top5AnimeIds`), Insígnias em destaque (`featuredBadgeIds`).
-- `animes`: Coleção do usuário para cálculo de episódios, status e recuperação das capas de alta resolução do Top 5.
-- `achievementAssets.ts`: Mapeamento direto de IDs de insígnias para suas imagens WebP correspondentes.
